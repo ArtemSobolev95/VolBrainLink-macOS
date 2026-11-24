@@ -1,0 +1,11 @@
+build/
+build-horos/
+dist/
+tests/*.nii.gz
+tests/*.dcm
+tests/tn
+tests/t2
+tests/tp
+*.o
+.DS_Store
+tests/out/
