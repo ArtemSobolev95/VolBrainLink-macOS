@@ -6,6 +6,7 @@
 #import "VBLJobStore.h"
 #import "VBLExport.h"
 #import "VBLPoller.h"
+#import "VBLCookies.h"
 #import <WebKit/WebKit.h>
 #import <OsiriXAPI/ViewerController.h>
 
@@ -214,7 +215,10 @@ static NSButton *VBLButton(NSString *title, id target, SEL action)
 {
     if (!_loadedOnce) {
         _loadedOnce = YES;
-        [_web loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:VBLHomeURL]]];
+        // Put the saved volBrain login back before the first page is requested.
+        [VBLCookies restoreThen:^{
+            [self->_web loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:VBLHomeURL]]];
+        }];
         [self showWindow:nil];
         // The job list gets about 230 points; the site gets the rest.
         NSSplitView *split = (NSSplitView *)self.window.contentView;
@@ -640,9 +644,17 @@ static NSString *VBLAgeSex(NSDictionary *job)
 {
     [_spinner stopAnimation:nil];
     [self updateNavigationButtons];
-    // Learn the Results page the first time it is opened, unless one was set by hand.
     NSURL *url = webView.URL;
     NSString *path = [[url path] lowercaseString];
+    BOOL onVolBrain = [[[url host] lowercaseString] hasSuffix:@"volbrain.net"];
+    BOOL loginPage = onVolBrain && ([path hasPrefix:@"/auth"] || [path rangeOfString:@"login"].location != NSNotFound);
+    [VBLPoller sharedPoller].visiblePageIsLogin = loginPage;
+    if (onVolBrain) {
+        [VBLCookies save];
+        if (!loginPage) [[VBLPoller sharedPoller] userMayHaveLoggedIn];
+        else _helper.stringValue = @"Log in to volBrain. Tick “Remember Me” so that you stay logged in; the plugin also keeps the login in your Keychain.";
+    }
+    // Learn the Results page the first time it is opened, unless one was set by hand.
     if (![VBLPoller resultsURL] && [[url host] hasSuffix:@"volbrain.net"]
         && ([path rangeOfString:@"result"].location != NSNotFound || [path rangeOfString:@"job"].location != NSNotFound)) {
         [VBLPoller setResultsURL:url];

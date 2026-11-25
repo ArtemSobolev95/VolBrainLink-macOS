@@ -9,6 +9,7 @@
 #import "VolBrainLinkFilter.h"
 #import "VBLWindowController.h"
 #import "VBLPoller.h"
+#import "VBLCookies.h"
 #import <OsiriXAPI/ViewerController.h>
 
 static NSString * const VBLMenuSend = @"volBrain: Send Series";
@@ -44,9 +45,13 @@ static NSString * const VBLMenuWindow = @"volBrain: Window";
 {
     // Resume the status checks of jobs uploaded before the viewer was restarted.
     dispatch_async(dispatch_get_main_queue(), ^{
-        [[VBLPoller sharedPoller] startIfNeeded];
+        // The saved volBrain login goes back in before any status check loads a page.
+        [VBLCookies restoreThen:^{ [[VBLPoller sharedPoller] startIfNeeded]; }];
         [VolBrainLinkFilter installAppMenuItem];
     });
+    [[NSNotificationCenter defaultCenter] addObserverForName:NSApplicationWillTerminateNotification object:nil
+                                                       queue:[NSOperationQueue mainQueue]
+                                                  usingBlock:^(NSNotification *note) { [VBLCookies save]; }];
     // The menu bar may be rebuilt after the plugins load: look again a little later.
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [VolBrainLinkFilter installAppMenuItem];

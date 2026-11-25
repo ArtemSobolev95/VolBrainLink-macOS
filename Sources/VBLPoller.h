@@ -28,6 +28,13 @@ extern NSString * const VBLDefaultsPollMinutes;  // NSUserDefaults key: minutes 
 + (NSInteger)pollMinutes;                 // 5...60, default 10
 + (void)setPollMinutes:(NSInteger)minutes;
 
+// Set by the volBrain window: YES while it shows the volBrain login (or another /auth/) page. Status
+// checks wait meanwhile, because each check would start a new volBrain session and so invalidate the
+// login form being filled in.
+@property (nonatomic) BOOL visiblePageIsLogin;
+// The volBrain window reached a volBrain page that is not a login page: checks may go on.
+- (void)userMayHaveLoggedIn;
+
 - (void)startIfNeeded;                    // schedules checks while jobs are waiting
 - (void)checkNow;
 // Checks now even between scheduled checks; completion (main thread) gets a one-line summary.

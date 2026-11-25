@@ -4,6 +4,7 @@
 
 #import "VBLPoller.h"
 #import "VBLJobStore.h"
+#import "VBLCookies.h"
 #import <Cocoa/Cocoa.h>
 #import <WebKit/WebKit.h>
 #import <UserNotifications/UserNotifications.h>
@@ -182,12 +183,36 @@ static NSString * const VBLScanScript =
     return [NSString stringWithFormat:@"Next status check at %@ (every %ld min).", [f stringFromDate:_timer.fireDate], (long)[VBLPoller pollMinutes]];
 }
 
-- (void)timerFired:(NSTimer *)timer { [self checkNow]; }
+- (void)timerFired:(NSTimer *)timer
+{
+    // While logged out, a check would only open a new volBrain session (and break a login being
+    // typed in the volBrain window): wait until the window shows that the login worked.
+    if (_needsLogin || self.visiblePageIsLogin) {
+        [self setStatus:@"Status checks paused: log in to volBrain in the volBrain window."];
+        return;
+    }
+    [self checkNow];
+}
+
+- (void)userMayHaveLoggedIn
+{
+    if (!_needsLogin) return;
+    _needsLogin = NO;
+    _loginNotified = NO;
+    VBLLog(@"volBrain window is logged in again: status checks resume");
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        if (!self.visiblePageIsLogin) [self checkNow];
+    });
+}
 
 - (void)checkNow { [self checkNowWithCompletion:nil]; }
 
 - (void)checkNowWithCompletion:(void (^)(NSString *summary))completion
 {
+    if (self.visiblePageIsLogin) {
+        if (completion) completion(@"Finish logging in to volBrain first, then check again.");
+        return;
+    }
     if (_webView) {   // a check is running: report its result too
         if (completion) {
             void (^previous)(NSString *) = _completion;
@@ -320,6 +345,7 @@ static NSString * const VBLScanScript =
     }
     _needsLogin = NO;
     _loginNotified = NO;
+    [VBLCookies save];
 
     NSUInteger running = 0, finished = 0;
     for (NSDictionary *job in _checking) {

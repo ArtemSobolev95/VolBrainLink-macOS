@@ -8,12 +8,12 @@ the PDF report back into the study.
 
 ## Download
 
-Current version: **1.0.0**. Click the package for your viewer:
+Current version: **1.0.1**. Click the package for your viewer:
 
 | Viewer | Download | macOS | Mac |
 |---|---|---|---|
-| IsiX DICOM Viewer 6.0.3+ (GitHub build) | [**VolBrainLink-IsiX-1.0.0.zip**](https://github.com/ArtemSobolev95/VolBrainLink-macOS/raw/main/downloads/VolBrainLink-IsiX-1.0.0.zip) | 15 or later | Apple silicon and Intel |
-| Horos 4.0.1 | [**VolBrainLink-Horos-1.0.0.zip**](https://github.com/ArtemSobolev95/VolBrainLink-macOS/raw/main/downloads/VolBrainLink-Horos-1.0.0.zip) | 11 or later | Apple silicon and Intel |
+| IsiX DICOM Viewer 6.0.3+ (GitHub build) | [**VolBrainLink-IsiX-1.0.1.zip**](https://github.com/ArtemSobolev95/VolBrainLink-macOS/raw/main/downloads/VolBrainLink-IsiX-1.0.1.zip) | 15 or later | Apple silicon and Intel |
+| Horos 4.0.1 | [**VolBrainLink-Horos-1.0.1.zip**](https://github.com/ArtemSobolev95/VolBrainLink-macOS/raw/main/downloads/VolBrainLink-Horos-1.0.1.zip) | 11 or later | Apple silicon and Intel |
 
 Each package works on both kinds of Mac. The App Store version of IsiX loads no plugins; use the
 [GitHub build of IsiX](https://github.com/ThalesMMS/IsiX-DICOM-Viewer-macOS/releases).

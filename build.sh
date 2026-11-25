@@ -57,6 +57,7 @@ OBJC_SOURCES=(
   Sources/VBLJobStore.m
   Sources/VBLPDFRaster.m
   Sources/VBLExport.m
+  Sources/VBLCookies.m
   Sources/VBLPoller.m
   Sources/VBLWindowController.m
   Sources/VolBrainLinkFilter.m

@@ -1,5 +1,12 @@
 # Changes
 
+## 1.0.1
+
+- The volBrain login survives restarts of the viewer: the plugin keeps the volbrain.net session cookies
+  in the macOS Keychain ("VolBrainLink volBrain login") and restores them before the first page loads
+- Logins no longer fail at random: status checks pause while you are logged out or on the login page
+  (each check used to start a new volBrain session, which invalidated the login form being filled in)
+
 ## 1.0.0 — first release
 
 - Send Series: 3D series → anonymous vbl_<id>.nii.gz (int16/float32, RAS sform+qform)
